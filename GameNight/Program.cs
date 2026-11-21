@@ -22,10 +22,35 @@ Path.Combine(AppContext.BaseDirectory, "..", "..", ".."));
 Directory.SetCurrentDirectory(projectFolder);
 
 
+
+//TITLE
+Console.WriteLine("");
+Console.WriteLine("=== GAME NIGHT LEADERBOARD ===");
+
+//PART-3: THE HISTORY (SECTION A)
+string[] history = File.ReadAllLines(HISTORY_FILE);
+int nightNumber;
+if (history.Length == 0)
+{
+    Console.WriteLine("No nights played yet.");
+    Console.WriteLine("Tonight is Night 1.");
+    nightNumber = 1;
+}
+else
+{
+    nightNumber = history.Length;
+    Console.WriteLine($"Nights played: {nightNumber}");
+    foreach (string night in history)
+    {
+        Console.WriteLine($"  {night}");
+    }
+    Console.WriteLine($"Tonight is Night {nightNumber + 1}.");
+}
+
 //PART-1: THE STANDINGS
 string[] points = File.ReadAllLines(POINTS_FILE);
 string[] players = File.ReadAllLines(PLAYERS_FILE);
-
+Console.WriteLine("");
 Console.Write($"{"PLAYER".PadRight(11)}");
 Console.WriteLine("POINTS");
 for (int i = 0; i < players.Length; i++)
@@ -38,34 +63,40 @@ Console.WriteLine($"Season total: {TotalPoints(points)}");
 Console.WriteLine(" ");
 
 //PART-2: GAME NIGHT
-int tonightsWinner;
+string tonightsWinner = "";
 int tonightsBestScore = 0;
 int season;
+Console.WriteLine("");
 for(int i = 0; i < players.Length; i++)
 {
     Console.Write($"Points tonight for {players[i]}: ");
     int tonightsPoint = Convert.ToInt32(Console.ReadLine());
     while (tonightsPoint > MAX_POINTS || tonightsPoint < MIN_POINTS)
     {
-        Console.WriteLine($"Points must be from {MIN_POINTS} to {MAX_POINTS}");
+        Console.WriteLine($"Points must be from {MIN_POINTS} to {MAX_POINTS}.");
         Console.Write($"Points tonight for {players[i]}: ");
         tonightsPoint = Convert.ToInt32(Console.ReadLine());
     }
     if (tonightsPoint > tonightsBestScore)
     {
         tonightsBestScore = tonightsPoint;
-        tonightsWinner = i;
+        tonightsWinner = players[i];
     }
     season = Convert.ToInt32(points[i]) + tonightsPoint;
-     points[i] = season.ToString();
-
+    points[i] = season.ToString();
 }
+Console.WriteLine($"Tonight's winner: {tonightsWinner} with {tonightsBestScore}");
 File.WriteAllLines(POINTS_FILE, points);
 
+//PART-3: THE HISTORY (SECTION B)
+string[] entry = { HistoryEntry(nightNumber, tonightsWinner, tonightsBestScore) };
+File.AppendAllLines(HISTORY_FILE, entry);
+Console.WriteLine("");
 
 
 
 
+//METHODS
 static int LeaderIndex(string[] points)
 {
     int leaderIndex = 0;
@@ -89,4 +120,8 @@ static int TotalPoints(string[] points)
     }
     return totalPoints;
 }
-//static string HistoryEntry(int night, string winner, int points)
+static string HistoryEntry(int night, string winner, int points)
+{
+    string history = $"Night {night}: {winner} won with {points} points";
+    return history;
+}
