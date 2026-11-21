@@ -122,7 +122,7 @@ static int LeaderIndex(string[] points)
 static int TotalPoints(string[] points)
 {
     int totalPoints = 0;
-    //I chose this array because I needed to iterate over the entire array without the need of a control variable
+    //I chose this loop because I needed to iterate over the entire array without the need of a control variable
     foreach (string point in points)
     {
         totalPoints += Convert.ToInt32(point);
